@@ -1,5 +1,4 @@
-# Bachelor thesis: Analysis of gender bias
-in popular Subreddits
+# Bachelor thesis: Analysis of gender bias in popular Subreddits
 **Information**  
  
 First examiner: Prof. Dr. Philipp Schaer 
