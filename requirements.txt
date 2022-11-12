@@ -6,12 +6,12 @@ matplotlib==3.5.3
 scipy==1.9.1
 wefe==0.3.2
 whatlies==0.6.3
-sklearn==1.1.2
+scikit-learn==1.1.2
 yellowbrick==1.5
 seaborn==0.11.0
 threadpoolctl==3.1.0
 requests==2.25.0
-bs4==4.9.3
+beautifulsoup4==4.9.3
 selenium==4.4.3
 networkx==2.5
 spacy==3.0.8
@@ -20,4 +20,4 @@ emoji==2.0.0
 psaw==0.1.0
 pymusas==0.3.0
 https://github.com/UCREL/pymusas-models/releases/download/en_dual_none_contextual-0.3.1/en_dual_none_contextual-0.3.1-py3-none-any.whl
-https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.3.1/en_core_web_sm-2.3.1.tar.gz#egg=en_core_web_sm
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.0.0/en_core_web_sm-3.0.0-py3-none-any.whl
