@@ -39,10 +39,7 @@ for i in subreddits:
                                     filter=['author','author_fullname', 'body','id','created_utc', 'name', 'parent_id', 'subreddit','permalink','link_id','score'])
             data=pd.DataFrame(k.d_ for k in reddit_comments)
             df = pd.concat([df, data], ignore_index=True)
-            #print(len(df))
-            #if after == 1659304799:
-            #    after = after
-            #else:
+          
             after += 79488
 
         sleep(15)
