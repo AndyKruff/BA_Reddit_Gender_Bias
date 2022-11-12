@@ -1,11 +1,13 @@
 import pandas as pd
-from ast import literal_eval
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 tqdm.pandas()
-
+import spacy
+import string
+import re
+import nltk
+import emoji
 
 def read_comment_df():
-    # important_columns = ['author','author_fullname', 'body','created_utc', 'name', 'parent_id', 'subreddit','permalink']
     # Read raw dataframe containing all submissions and comments  
     
     df = pd.read_csv("../datasets/reddit_dump.csv") 
@@ -32,8 +34,6 @@ def drop_bots_from_comments(df):
 
 
 def sentence_splitting(df):
-    import spacy
-    
     #load spacy model
     nlp = spacy.load("en_core_web_sm")
     
@@ -49,60 +49,54 @@ def sentence_splitting(df):
     return df
 
 
-def remove_by_regex_pattern(liste, emoji_pattern):
-    import re
+def remove_by_regex_pattern(sentence, emoji_pattern):
     # Remove links and filenames, subreddits (r/...) , users (u/...) , tags with @... and #... 
-    for i in range(len(liste)):
-        liste[i] = re.sub(r'http(s)?://[^\s]+\.[^\s]+', r'', liste[i], flags=re.MULTILINE | re.DOTALL)
-        liste[i] = re.sub(r'(\*+)?\[(.+?)\]\(http(s)?://[^\s]+\.[^\s\)]+\)(\*+)?', r'\2', liste[i],
+    for i in range(len(sentence)):
+        sentence[i] = re.sub(r'http(s)?://[^\s]+\.[^\s]+', r'', sentence[i], flags=re.MULTILINE | re.DOTALL)
+        sentence[i] = re.sub(r'(\*+)?\[(.+?)\]\(http(s)?://[^\s]+\.[^\s\)]+\)(\*+)?', r'\2', sentence[i],
                           flags=re.MULTILINE | re.DOTALL)
-        liste[i] = re.sub(r'r/[^\s]+|u/[^\s]+', r'', liste[i], flags=re.MULTILINE | re.DOTALL)
-        liste[i] = re.sub(r'R/[^\s]+|U/[^\s]+', r'', liste[i], flags=re.MULTILINE | re.DOTALL)
-        liste[i] = re.sub(r'#[^\s]+', r'', liste[i], flags=re.MULTILINE | re.DOTALL)
-        liste[i] = re.sub(r'[^\s]+\.jpg', r'', liste[i], flags=re.MULTILINE | re.DOTALL)
-        liste[i] = re.sub(r'[^\s]+\.com', r'', liste[i], flags=re.MULTILINE | re.DOTALL)
-        liste[i] = re.sub(r'@[^\s]*', r' ', liste[i], flags=re.MULTILINE | re.DOTALL)
+        sentence[i] = re.sub(r'r/[^\s]+|u/[^\s]+', r'', sentence[i], flags=re.MULTILINE | re.DOTALL)
+        sentence[i] = re.sub(r'R/[^\s]+|U/[^\s]+', r'', sentence[i], flags=re.MULTILINE | re.DOTALL)
+        sentence[i] = re.sub(r'#[^\s]+', r'', sentence[i], flags=re.MULTILINE | re.DOTALL)
+        sentence[i] = re.sub(r'[^\s]+\.jpg', r'', sentence[i], flags=re.MULTILINE | re.DOTALL)
+        sentence[i] = re.sub(r'[^\s]+\.com', r'', sentence[i], flags=re.MULTILINE | re.DOTALL)
+        sentence[i] = re.sub(r'@[^\s]*', r' ', sentence[i], flags=re.MULTILINE | re.DOTALL)
 
         # Remove emojis
 
-        liste[i] = re.sub(emoji_pattern, r'', liste[i], flags=re.MULTILINE)
+        sentence[i] = re.sub(emoji_pattern, r'', sentence[i], flags=re.MULTILINE)
 
         # Remove cpecial characters
 
-        liste[i] = re.sub(r'&amp;#x200B;', r'', liste[i], flags=re.MULTILINE)
-        liste[i] = re.sub(r'&amp;nbsp;', r'', liste[i], flags=re.MULTILINE)
-        liste[i] = re.sub(r'&amp;', r'', liste[i], flags=re.MULTILINE)
-        liste[i] = re.sub(r"&gt;", r' ', liste[i], flags=re.MULTILINE)
-        liste[i] = re.sub(r"\n", r' ', liste[i], flags=re.MULTILINE)
+        sentence[i] = re.sub(r'&amp;#x200B;', r'', sentence[i], flags=re.MULTILINE)
+        sentence[i] = re.sub(r'&amp;nbsp;', r'', sentence[i], flags=re.MULTILINE)
+        sentence[i] = re.sub(r'&amp;', r'', sentence[i], flags=re.MULTILINE)
+        sentence[i] = re.sub(r"&gt;", r' ', sentence[i], flags=re.MULTILINE)
+        sentence[i] = re.sub(r"\n", r' ', sentence[i], flags=re.MULTILINE)
 
         # Removing numbers, dates (completely when deleting punctuations), etc.
 
-        liste[i] = re.sub(r"\d+", r' ', liste[i],
+        sentence[i] = re.sub(r"\d+", r' ', sentence[i],
                           flags=re.MULTILINE)  
 
         # Remove non-alphanumeric chars
 
-        liste[i] = re.sub(r"\W+", r' ', liste[i], flags=re.MULTILINE | re.DOTALL)
+        sentence[i] = re.sub(r"\W+", r' ', sentence[i], flags=re.MULTILINE | re.DOTALL)
 
         # Remove punctuations
 
-        import string
+        sentence[i] = str(sentence[i]).translate(str.maketrans('', '', string.punctuation))
 
-        liste[i] = str(liste[i]).translate(str.maketrans('', '', string.punctuation))
-
-        liste[i] = re.sub(r"^\s+$", r'', liste[i], flags=re.MULTILINE | re.DOTALL)
+        sentence[i] = re.sub(r"^\s+$", r'', sentence[i], flags=re.MULTILINE | re.DOTALL)
 
         # Remove all non ascii chars
 
-        liste[i] = re.sub(r"[^\u0020-\u007F\n]", "", liste[i])
+        sentence[i] = re.sub(r"[^\u0020-\u007F\n]", "", sentence[i])
 
-    return liste
+    return sentence
 
 
-def stopwords_tokenization_lemmatization(df):
-    import spacy
-    import string
-    
+def stopwords_tokenization_lemmatization(df):   
     # load spacy model
     nlp = spacy.load("en_core_web_sm")
     
@@ -131,11 +125,11 @@ def stopwords_tokenization_lemmatization(df):
     return df
 
 
-def helper_function_stopwords_tokenization_lemmatization(liste, nlp, stopwords_):
+def helper_function_stopwords_tokenization_lemmatization(list_of_sentences, nlp, stopwords_):
     
     # Tokenized sentences are added as list into the list
     list_of_list_of_tokens = []
-    for sentence in liste:
+    for sentence in list_of_sentences:
         # Tokens from sentence will be added to this list
         sentence_to_token_list = [] 
         for token in nlp(sentence):
@@ -143,7 +137,6 @@ def helper_function_stopwords_tokenization_lemmatization(liste, nlp, stopwords_)
                     token.text) > 1:  # just add lower case tokens to the list, that are not in stopwords and longer than one, 
                                       # two would also be possible, but words like gf (girlfriend) would be excluded 
                 sentence_to_token_list.append(token.lemma_.lower()) # Added lowercase lemmtaized term to list
-                # liste_3.append(token.text.lower())
         list_of_list_of_tokens.append(sentence_to_token_list)
 
     return list_of_list_of_tokens
@@ -153,8 +146,6 @@ if __name__ == "__main__":
     df = drop_bots_from_comments(df)
     print("splitting")
     df = sentence_splitting(df)
-    import emoji
-    import re
     # Define regex pattern for emojis (once)
     emojis = sorted(emoji.EMOJI_DATA, key=len, reverse=True)
     pattern = u'(' + u'|'.join(re.escape(u) for u in emojis) + u')'
