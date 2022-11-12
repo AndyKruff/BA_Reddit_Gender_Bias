@@ -29,7 +29,7 @@ Sciebo contains the following datasets:
 - **reddit_dump.csv:** Contains submissions and comments for the eleven subreddits within the observation window (not filtered nor preprocessed)   
 
 - **author_metrics.csv:** Contains the calculated user metrics.
-- **authors_usergroups_by_kmeans:** Contains the calculated user metrics and the assigned clusters/user groups by kmeans.
+- **authors_usergroups_by_kmeans.csv:** Contains the calculated user metrics and the assigned clusters/user groups by kmeans.
 - **authors_usergroups_by_decision_rules.csv:** Contains the calculated user metrics and the assigned clusters/user groups by the decision rules.
 
 # Notes:
