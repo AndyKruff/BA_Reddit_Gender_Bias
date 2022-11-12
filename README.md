@@ -1,10 +1,10 @@
 # Bachelor thesis: Analysis of gender bias in popular Subreddits
 **Information**  
  
-First examiner: Prof. Dr. Philipp Schaer 
-Second examiner: M.Sc. Fabian Haak  
+- First examiner: Prof. Dr. Philipp Schaer 
+- Second examiner: M.Sc. Fabian Haak  
 
-Student: Andreas Kruff  
+- Student: Andreas Kruff  
   
 ```
 Analysis of gender bias in popular Subreddits
